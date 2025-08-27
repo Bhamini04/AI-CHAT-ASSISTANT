@@ -15,7 +15,12 @@ app.use(express.json({ limit: "10mb" })); // allow base64 images
 const API_KEY = process.env.GEMINI_API_KEY;
 const MODEL = "gemini-1.5-flash";
 
-// Health check (optional)
+// ✅ Root route (fix for "Cannot GET /")
+app.get("/", (_req, res) => {
+  res.send("✅ AI Chat Assistant Backend is running");
+});
+
+// Health check
 app.get("/api", (_req, res) => res.send("✅ Gemini backend running"));
 
 // Chat endpoint
@@ -49,10 +54,11 @@ app.post("/api/chat", async (req, res) => {
 
     let reply = "⚠️ No response from Gemini API";
     if (data?.candidates?.[0]?.content?.parts?.length) {
-      reply = data.candidates[0].content.parts
-        .map((p) => p.text || "")
-        .join("")
-        .trim() || reply;
+      reply =
+        data.candidates[0].content.parts
+          .map((p) => p.text || "")
+          .join("")
+          .trim() || reply;
     }
     if (data?.promptFeedback?.blockReason) {
       reply = `⚠️ Blocked by safety: ${data.promptFeedback.blockReason}`;
@@ -70,3 +76,4 @@ const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
   console.log(`✅ Server running at http://localhost:${PORT}`);
 });
+
