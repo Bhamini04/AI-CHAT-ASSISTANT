@@ -4,8 +4,9 @@ import "./App.css";
 
 // ✅ Backend URL config
 const BACKEND_URL =
-  process.env.REACT_APP_API_URL ||
-  (window.location.hostname === "localhost"
+  (process.env.REACT_APP_API_URL
+    ? `${process.env.REACT_APP_API_URL}/api/chat`
+    : window.location.hostname === "localhost"
     ? "http://localhost:5000/api/chat"
     : "/api/chat");
 
