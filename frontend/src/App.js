@@ -2,23 +2,24 @@ import React, { useEffect, useRef, useState } from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "./App.css";
 
-// ✅ Automatically switch between local and deployed backend
+// ✅ Backend URL config
 const BACKEND_URL =
-  window.location.hostname === "localhost"
+  process.env.REACT_APP_API_URL ||
+  (window.location.hostname === "localhost"
     ? "http://localhost:5000/api/chat"
-    : "/api/chat";
+    : "/api/chat");
 
 export default function App() {
   const [messages, setMessages] = useState([
     { role: "bot", content: "Hello! I'm your AI Chat Assistant 🤖" },
   ]);
   const [input, setInput] = useState("");
-  const [theme, setTheme] = useState("neon"); // 'neon' | 'dark'
-  const [listens, setListens] = useState(false); // mic on/off
-  const [voiceOn, setVoiceOn] = useState(false); // speak bot replies
+  const [theme, setTheme] = useState("neon");
+  const [listens, setListens] = useState(false);
+  const [voiceOn, setVoiceOn] = useState(false);
   const [sending, setSending] = useState(false);
 
-  const [image, setImage] = useState(null); // { data, mimeType, name, previewUrl }
+  const [image, setImage] = useState(null);
   const fileRef = useRef();
   const msgEndRef = useRef();
 
@@ -27,9 +28,8 @@ export default function App() {
     msgEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
 
-  // Browser speech recognition (mic)
-  const SR =
-    window.SpeechRecognition || window.webkitSpeechRecognition || null;
+  // Browser speech recognition
+  const SR = window.SpeechRecognition || window.webkitSpeechRecognition || null;
   const recognizerRef = useRef(null);
 
   const startListening = () => {
@@ -56,7 +56,7 @@ export default function App() {
     setListens(false);
   };
 
-  // Speech synthesis (speak bot)
+  // Speech synthesis
   const speak = (text) => {
     if (!("speechSynthesis" in window)) return;
     const utter = new SpeechSynthesisUtterance(text);
@@ -174,7 +174,10 @@ export default function App() {
                 checked={voiceOn}
                 onChange={(e) => setVoiceOn(e.target.checked)}
               />
-              <label className="form-check-label text-nowrap" htmlFor="voiceSwitch">
+              <label
+                className="form-check-label text-nowrap"
+                htmlFor="voiceSwitch"
+              >
                 Voice reply
               </label>
             </div>
@@ -188,7 +191,9 @@ export default function App() {
             {messages.map((m, i) => (
               <div
                 key={i}
-                className={`message ${m.role === "user" ? "user-message" : "bot-message"}`}
+                className={`message ${
+                  m.role === "user" ? "user-message" : "bot-message"
+                }`}
               >
                 {m.imageUrl && (
                   <div className="mb-2">
@@ -269,7 +274,11 @@ export default function App() {
               )}
 
               {/* Send */}
-              <button className="btn send-btn px-4" disabled={sending} onClick={sendMessage}>
+              <button
+                className="btn send-btn px-4"
+                disabled={sending}
+                onClick={sendMessage}
+              >
                 {sending ? "Sending…" : "Send"}
               </button>
             </div>
@@ -284,3 +293,5 @@ export default function App() {
     </div>
   );
 }
+
+
